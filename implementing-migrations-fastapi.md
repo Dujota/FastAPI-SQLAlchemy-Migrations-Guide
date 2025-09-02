@@ -49,11 +49,27 @@ else:
 
 #### Step 2: Link Models
 
+- Create `models/__init__.py` that imports the modules (not the classes) for side effects. This registers all mappers without creating circular imports.
+
+```python
+# models/__init__.py
+from .base import BaseModel
+
+# Import submodules so their classes register with the mapper registry.
+# Import modules, not classes, to avoid circular imports between request/property/notification.
+from . import user          # defines UserModel
+from . import tea
+from . import comments
+# add future models here as needed
+
+__all__ = ["BaseModel"]
+```
+
 - In `migrations/env.py`, import your models and set:
 
 ```python
 from database import Base
-from models import user
+import models # Import all models to register them
 
 target_metadata = Base.metadata
 ```
